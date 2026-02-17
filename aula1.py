@@ -9,9 +9,7 @@ st.set_page_config(page_title="Mapa Cirúrgico Oficial", layout="centered")
 st.title("🏥 Reserva de Sala Cirúrgica")
 
 # Conexão com a sua planilha (Link que você enviou)
-url = "https://docs.google.com/spreadsheets/d/1-w1V1UfEfwxRAMd_gw9n3D0u5lZgDyzFGBGxNNsRAzc/edit?usp=sharing"
-conn = st.connection("gsheets", type=GSheetsConnection)
-
+URL_PLANILHA = "https://docs.google.com/spreadsheets/d/1-w1V1UfEfwxRAMd_gw9n3D0u5lZgDyzFGBGxNNsRAzc/export?format=csv"
 # 1. FORMULÁRIO
 with st.form("form_final", clear_on_submit=True):
     col1, col2 = st.columns(2)
@@ -54,4 +52,5 @@ if botao:
         st.success("🚀 Reserva salva na planilha da gestora!")
         st.balloons()
     except:
+
         st.error("Erro ao conectar. Verifique se a planilha está como 'Editor' para todos.")
