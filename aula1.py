@@ -8,9 +8,13 @@ st.set_page_config(page_title="Mapa Cirúrgico Oficial", layout="centered")
 
 st.title("🏥 Reserva de Sala Cirúrgica")
 
-# Conexão com a sua planilha (Link que você enviou)
-URL_PLANILHA = "https://docs.google.com/spreadsheets/d/1-w1V1UfEfwxRAMd_gw9n3D0u5lZgDyzFGBGxNNsRAzc/export?format=csv"
-# 1. FORMULÁRIO
+# 1. LINK CORRETO DA PLANILHA (Link principal)
+url_oficial = "https://docs.google.com/spreadsheets/d/1-w1V1UfEfwxRAMd_gw9n3D0u5lZgDyzFGBGxNNsRAzc/edit#gid=0"
+
+# 2. LIGANDO A CONEXÃO (O que faltava!)
+conn = st.connection("gsheets", type=GSheetsConnection)
+
+# FORMULÁRIO
 with st.form("form_final", clear_on_submit=True):
     col1, col2 = st.columns(2)
     with col1:
@@ -27,12 +31,12 @@ with st.form("form_final", clear_on_submit=True):
     
     botao = st.form_submit_button("✅ CONFIRMAR RESERVA")
 
-# 2. AÇÃO DE SALVAR
+# AÇÃO DE SALVAR
 if botao:
     # Cálculo do gatilho de 7 dias
     data_gatilho = data_cir + pd.Timedelta(days=7)
     
-    # Organizando os dados para a planilha
+    # Organizando os dados
     dados_novos = pd.DataFrame([{
         "Data Registro": datetime.now().strftime("%d/%m/%Y %H:%M"),
         "Cirurgião": medico,
@@ -44,13 +48,13 @@ if botao:
         "Observação": obs
     }])
 
-    # Lendo dados existentes e adicionando o novo
     try:
-        existentes = conn.read(spreadsheet=url)
+        # Lendo e atualizando
+        existentes = conn.read(spreadsheet=url_oficial)
         atualizado = pd.concat([existentes, dados_novos], ignore_index=True)
-        conn.update(spreadsheet=url, data=atualizado)
+        conn.update(spreadsheet=url_oficial, data=atualizado)
         st.success("🚀 Reserva salva na planilha da gestora!")
         st.balloons()
-    except:
-
-        st.error("Erro ao conectar. Verifique se a planilha está como 'Editor' para todos.")
+    except Exception as e:
+        st.error(f"Erro técnico: {e}")
+        st.error("DICA: Verifique se a planilha está como 'EDITOR' para 'Qualquer pessoa com o link'.")
